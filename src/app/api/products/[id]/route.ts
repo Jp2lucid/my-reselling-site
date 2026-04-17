@@ -24,6 +24,10 @@ export async function PUT(
     const body = await request.json();
     const { name, sku, category, quantity, cost_price, selling_price, image_url, notes } = body;
 
+    if (!name || !sku || cost_price == null || selling_price == null) {
+      return NextResponse.json({ error: 'name, sku, cost_price, and selling_price are required' }, { status: 400 });
+    }
+
     const existing = db.prepare('SELECT * FROM products WHERE id = ?').get(params.id);
     if (!existing) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 

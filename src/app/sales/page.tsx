@@ -33,15 +33,20 @@ export default function SalesPage() {
 
   const handleRecordSale = async (data: { product_id: number; quantity: number; sale_price: number; sale_date: string; notes: string }) => {
     setFormLoading(true);
-    const res = await fetch('/api/sales', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    const json = await res.json();
-    setFormLoading(false);
-    if (res.ok) {
-      setShowModal(false);
-      setToast({ message: 'Sale recorded successfully!', type: 'success' });
-      fetchSales();
-    } else {
-      setToast({ message: json.error || 'Failed to record sale', type: 'error' });
+    try {
+      const res = await fetch('/api/sales', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const json = await res.json();
+      if (res.ok) {
+        setShowModal(false);
+        setToast({ message: 'Sale recorded successfully!', type: 'success' });
+        fetchSales();
+      } else {
+        setToast({ message: json.error || 'Failed to record sale', type: 'error' });
+      }
+    } catch {
+      setToast({ message: 'Network error — could not record sale', type: 'error' });
+    } finally {
+      setFormLoading(false);
     }
   };
 

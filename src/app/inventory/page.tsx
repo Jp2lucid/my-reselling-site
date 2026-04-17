@@ -43,30 +43,40 @@ export default function InventoryPage() {
 
   const handleAdd = async (data: Partial<Product>) => {
     setFormLoading(true);
-    const res = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    const json = await res.json();
-    setFormLoading(false);
-    if (res.ok) {
-      setShowModal(false);
-      setToast({ message: 'Product added successfully!', type: 'success' });
-      fetchProducts();
-    } else {
-      setToast({ message: json.error || 'Failed to add product', type: 'error' });
+    try {
+      const res = await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const json = await res.json();
+      if (res.ok) {
+        setShowModal(false);
+        setToast({ message: 'Product added successfully!', type: 'success' });
+        fetchProducts();
+      } else {
+        setToast({ message: json.error || 'Failed to add product', type: 'error' });
+      }
+    } catch {
+      setToast({ message: 'Network error — could not add product', type: 'error' });
+    } finally {
+      setFormLoading(false);
     }
   };
 
   const handleEdit = async (data: Partial<Product>) => {
     if (!editProduct) return;
     setFormLoading(true);
-    const res = await fetch(`/api/products/${editProduct.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-    const json = await res.json();
-    setFormLoading(false);
-    if (res.ok) {
-      setEditProduct(null);
-      setToast({ message: 'Product updated!', type: 'success' });
-      fetchProducts();
-    } else {
-      setToast({ message: json.error || 'Failed to update', type: 'error' });
+    try {
+      const res = await fetch(`/api/products/${editProduct.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const json = await res.json();
+      if (res.ok) {
+        setEditProduct(null);
+        setToast({ message: 'Product updated!', type: 'success' });
+        fetchProducts();
+      } else {
+        setToast({ message: json.error || 'Failed to update', type: 'error' });
+      }
+    } catch {
+      setToast({ message: 'Network error — could not update product', type: 'error' });
+    } finally {
+      setFormLoading(false);
     }
   };
 
